@@ -57,30 +57,6 @@ def authenticate_user(db, username: str, password: str):
 # ----------------- Home -----------------
 
 
-# @app.get("/")
-# async def home(req: Request, db: Session = Depends(get_db)):
-#     todos = db.query(models.Todo).all()
-
-#     # Categorize tasks by their status
-#     pending_tasks = [
-#         task for task in todos if not task.status and task.dueDate >= datetime.now()
-#     ]
-#     completed_tasks = [task for task in todos if task.status]
-#     overdue_tasks = [
-#         task for task in todos if not task.status and task.dueDate < datetime.now()
-#     ]
-
-#     return directory.TemplateResponse(
-#         "index.html",
-#         {
-#             "request": req,
-#             "pending_tasks": pending_tasks,
-#             "completed_tasks": completed_tasks,
-#             "overdue_tasks": overdue_tasks,
-#         },
-#     )
-
-
 @app.get("/")
 async def home(req: Request, db: Session = Depends(get_db)):
     logged_in = False
@@ -121,9 +97,7 @@ async def home(req: Request, db: Session = Depends(get_db)):
 
 
 @app.get("/profile")
-async def profile(
-    req: Request, db: Session = Depends(get_db), username: str = Depends(oauth2_scheme)
-):
+async def profile(req: Request):
     return directory.TemplateResponse("profile.html", {"request": req})
 
 
@@ -135,19 +109,6 @@ async def profile(
 @app.get("/login")
 async def login(req: Request):
     return directory.TemplateResponse("login.html", {"request": req})
-
-
-# @app.post("/token")
-# async def login_for_access_token(
-#     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-# ):
-#     # Authenticate the user using the User table
-#     user = authenticate_user(db, form_data.username, form_data.password)
-#     if not user:
-#         return JSONResponse(status_code=401, content={"error": "Invalid credentials"})
-
-#     # Return the access token on successful authentication
-#     return {"access_token": user.username, "token_type": "bearer"}
 
 
 @app.post("/token")
