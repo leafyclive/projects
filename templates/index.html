@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Todo List</title>
 </head>
 <body>
     <div>
-        <a href="login">Login</a>
-        <a href="sign_up">Sign Up</a>
+        {% if logged_in %}
+            <span>Welcome, {{ user }}!</span>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/sign_up">Sign Up</a>
+        {% endif %}
         <a href="profile">Profile</a>
-        <a href="new_task">New Task</a>
     </div>
     <h1>Todo List</h1>
     <div>
@@ -20,24 +24,34 @@
         <input type="text" id="search" placeholder="Search tasks...">
         <button onclick="filterTasks()">Search</button>
     </div>
+
     <div>
         <h2>Pending</h2>
         <ul id="pending-tasks">
-            <!-- Pending tasks will be listed here -->
+            {% for task in pending_tasks %}
+                <li>{{ task.title }} - Due: {{ task.dueDate }}</li>
+            {% endfor %}
         </ul>
     </div>
+
     <div>
         <h2>Completed</h2>
         <ul id="completed-tasks">
-            <!-- Completed tasks will be listed here -->
+            {% for task in completed_tasks %}
+                <li>{{ task.title }} - Completed</li>
+            {% endfor %}
         </ul>
     </div>
+
     <div>
         <h2>Overdue</h2>
         <ul id="overdue-tasks">
-            <!-- Overdue tasks will be listed here -->
+            {% for task in overdue_tasks %}
+                <li>{{ task.title }} - Overdue</li>
+            {% endfor %}
         </ul>
     </div>
+
     <script>
         function filterTasks() {
             // Implement filter functionality here

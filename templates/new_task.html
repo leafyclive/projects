@@ -8,14 +8,14 @@
 <body>
     <div class="container">
         <h1>Task Creation and Editing</h1>
-        <form id="taskForm">
+        <form id="taskForm" method="POST" action="/new_task">
             <div class="form-group">
                 <label for="taskTitle">Task Title</label>
                 <input type="text" id="taskTitle" name="taskTitle" required>
             </div>
             <div class="form-group">
                 <label for="taskDescription">Task Description</label>
-                <textarea id="taskDescription" name="taskDescription" rows="4" required></textarea>
+                <textarea id="taskDescription" name="taskDescription" rows="4"></textarea>
             </div>
             <div class="form-group">
                 <label for="taskDueDate">Due Date</label>
@@ -27,10 +27,25 @@
         </form>
     </div>
     <script>
-        document.getElementById('taskForm').addEventListener('submit', function(event) {
+        document.getElementById('taskForm').addEventListener('submit', async function(event) {
             event.preventDefault();
-            // Add your form submission logic here
-            alert('Task saved successfully!');
+
+            // Get form data
+            const formData = new FormData(event.target);
+
+            // Submit the form via fetch API
+            const response = await fetch('/new_task', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('Task saved successfully!');
+                window.location.href = '/';  // Redirect to index page after saving
+            } else {
+                const data = await response.json();
+                alert('Error: ' + data.error);
+            }
         });
     </script>
 </body>
