@@ -29,7 +29,12 @@
         <h2>Pending</h2>
         <ul id="pending-tasks">
             {% for task in pending_tasks %}
-                <li>{{ task.title }} - Due: {{ task.dueDate }}</li>
+                <li>
+                    {{ task.title }} - Due: {{ task.dueDate }}
+                    <form action="/complete_task/{{ task.id }}" method="POST" style="display: inline;">
+                        <button type="submit">Complete</button>
+                    </form>
+                </li>
             {% endfor %}
         </ul>
     </div>
@@ -47,7 +52,12 @@
         <h2>Overdue</h2>
         <ul id="overdue-tasks">
             {% for task in overdue_tasks %}
-                <li>{{ task.title }} - Overdue</li>
+                <li>
+                    {{ task.title }} - Overdue, planned date: {{ task.dueDate }}
+                    <form action="/complete_task/{{ task.id }}" method="POST" style="display: inline;">
+                        <button type="submit">Complete</button>
+                    </form>
+                </li>
             {% endfor %}
         </ul>
     </div>

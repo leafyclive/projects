@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Request, Form, status
+from fastapi import FastAPI, Depends, Request, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 from datetime import datetime
@@ -225,3 +225,18 @@ async def newTask(req: Request, db: Session = Depends(get_db)):
 @app.get("/analytics")
 async def analytics(req: Request, db: Session = Depends(get_db)):
     return directory.TemplateResponse("analytics.html", {"request": req})
+
+
+# ---------------complete task-----------------
+
+
+@app.post("/complete_task/{task_id}")
+async def complete_task(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(models.Todo).filter(models.Todo.id == task_id).first()
+    if task:
+        task.status = True
+        db.commit()
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+# ---------------------------------------------
