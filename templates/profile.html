@@ -4,18 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <link rel="stylesheet" href="/static/navbar.css">
 </head>
 <body>
+    <div class="navbar">
+        {% if logged_in %}
+            <span>Welcome, {{ user.username }}</span>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/sign_up">Sign Up</a>
+        {% endif %}
+        <a href="profile/{{ user.id }}">Profile</a>
+    </div>
+    
     <header>
         <div class="container">
             <div id="branding">
                 <h1>Profile</h1>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
     <div class="container personal-info">

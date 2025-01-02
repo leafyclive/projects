@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Request, status, Form
+from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
@@ -18,6 +19,9 @@ app = FastAPI()
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key="!secret")
+
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
