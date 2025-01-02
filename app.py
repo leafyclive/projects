@@ -141,9 +141,20 @@ async def signup_post(
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    confirm_password: str = Form(...),
     db: Session = Depends(get_db),
 ):
+    # Check if passwords match
+    if password != confirm_password:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"error": "Passwords do not match"},
+        )
+
+    # Hash the password
     hashed_password = pwd_context.hash(password)
+
+    # Create a new user
     new_user = models.User(
         username=username, email=email, hashed_password=hashed_password
     )
