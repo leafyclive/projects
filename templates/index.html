@@ -8,13 +8,13 @@
 <body>
     <div>
         {% if logged_in %}
-            <span>Welcome, {{ user }}!</span>
+            <span>Welcome, {{ user.username }}</span>
             <a href="/logout">Logout</a>
         {% else %}
             <a href="/login">Login</a>
             <a href="/sign_up">Sign Up</a>
         {% endif %}
-        <a href="profile">Profile</a>
+        <a href="profile/{{ user.id }}">Profile</a>
     </div>
     <h1>Todo List</h1>
     <div>
@@ -30,37 +30,52 @@
         <ul id="pending-tasks">
             {% for task in pending_tasks %}
                 <li>
-                    {{ task.title }} - Due: {{ task.dueDate }}
+                    <strong>{{ task.title }}</strong> - Due: {{ task.dueDate }}
+                    <p>Description: {{ task.description }}</p>
                     <form action="/complete_task/{{ task.id }}" method="POST" style="display: inline;">
                         <button type="submit">Complete</button>
+                    </form>
+                    <form action="/delete_task/{{ task.id }}" method="POST" style="display: inline;">
+                        <button type="submit">Delete</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
     </div>
-
+    
     <div>
         <h2>Completed</h2>
         <ul id="completed-tasks">
             {% for task in completed_tasks %}
-                <li>{{ task.title }} - Completed</li>
+                <li>
+                    <strong>{{ task.title }}</strong> - Completed
+                    <p>Description: {{ task.description }}</p>
+                    <form action="/delete_task/{{ task.id }}" method="POST" style="display: inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
             {% endfor %}
         </ul>
     </div>
-
+    
     <div>
         <h2>Overdue</h2>
         <ul id="overdue-tasks">
             {% for task in overdue_tasks %}
                 <li>
-                    {{ task.title }} - Overdue, planned date: {{ task.dueDate }}
+                    <strong>{{ task.title }}</strong> - Overdue, planned date: {{ task.dueDate }}
+                    <p>Description: {{ task.description }}</p>
                     <form action="/complete_task/{{ task.id }}" method="POST" style="display: inline;">
                         <button type="submit">Complete</button>
+                    </form>
+                    <form action="/delete_task/{{ task.id }}" method="POST" style="display: inline;">
+                        <button type="submit">Delete</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
     </div>
+    
 
     <script>
         function filterTasks() {
