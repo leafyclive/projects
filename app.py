@@ -138,6 +138,7 @@ async def signup(req: Request):
 
 @app.post("/sign_up")
 async def signup_post(
+    req: Request,  # Add Request instance here
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
@@ -146,9 +147,14 @@ async def signup_post(
 ):
     # Check if passwords match
     if password != confirm_password:
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={"error": "Passwords do not match"},
+        return templates.TemplateResponse(
+            "sign_up.html",
+            {
+                "request": req,  # Use the instance `req` here
+                "error": "Passwords do not match",
+                "username": username,
+                "email": email,
+            },
         )
 
     # Hash the password
@@ -165,8 +171,14 @@ async def signup_post(
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
     except SQLAlchemyError as e:
         db.rollback()
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content={"error": str(e)}
+        return templates.TemplateResponse(
+            "sign_up.html",
+            {
+                "request": req,  # Use the instance `req` here
+                "error": "An error occurred while creating the account. Please try again.",
+                "username": username,
+                "email": email,
+            },
         )
 
 

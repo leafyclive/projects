@@ -9,6 +9,7 @@
 </head>
 
 <body>
+
     <div class="signup-container">
         <h2>Sign Up</h2>
         <form action="/sign_up" method="post">
@@ -26,6 +27,10 @@
 
             <button type="submit">Sign Up</button>
         </form>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
     </div>
 </body>
 
