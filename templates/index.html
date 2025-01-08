@@ -106,24 +106,6 @@
                     }
                 });
             });
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            const taskSegments = document.querySelectorAll('.segment');
-
-            taskSegments.forEach(segment => {
-                const taskList = segment.querySelector('ul');
-                const tasks = taskList.querySelectorAll('li');
-
-                tasks.forEach(task => {
-                    const taskTitle = task.querySelector('strong').textContent.toLowerCase();
-                    const taskDescription = task.querySelector('p').textContent.toLowerCase();
-
-                    if (taskTitle.includes(searchQuery) || taskDescription.includes(searchQuery)) {
-                        task.style.display = 'block';
-                    } else {
-                        task.style.display = 'none';
-                    }
-                });
-            });
         }
     </script>
 </body>
