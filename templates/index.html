@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
     <link rel="stylesheet" href="/static/index.css">
 </head>
+
 
 <body>
     <div class="navbar">
@@ -37,7 +39,7 @@
         <ul id="pending-tasks">
             {% for task in pending_tasks %}
                 <li>
-                    <strong>{{ task.title }}</strong> - Due: {{ task.dueDate }}
+                    <strong>{{ task.title }}</strong> - Pending, Due: {{ task.dueDate }}
                     <p>Description: {{ task.description }}</p>
                     <form action="/complete_task/{{ task.id }}" method="POST" style="display: inline;">
                         <button type="submit", class="complete">Complete</button>
@@ -104,7 +106,26 @@
                     }
                 });
             });
+            const searchQuery = document.getElementById('search').value.toLowerCase();
+            const taskSegments = document.querySelectorAll('.segment');
+
+            taskSegments.forEach(segment => {
+                const taskList = segment.querySelector('ul');
+                const tasks = taskList.querySelectorAll('li');
+
+                tasks.forEach(task => {
+                    const taskTitle = task.querySelector('strong').textContent.toLowerCase();
+                    const taskDescription = task.querySelector('p').textContent.toLowerCase();
+
+                    if (taskTitle.includes(searchQuery) || taskDescription.includes(searchQuery)) {
+                        task.style.display = 'block';
+                    } else {
+                        task.style.display = 'none';
+                    }
+                });
+            });
         }
     </script>
 </body>
+
 </html>

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Request, status, Form
+from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -22,6 +23,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key="!secret")
+
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -128,7 +132,7 @@ async def login_for_access_token(
 @app.get("/logout")
 async def logout(req: Request):
     req.session.clear()
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @app.get("/sign_up")
@@ -158,7 +162,22 @@ async def signup_post(
         )
 
     # Hash the password
+    # Check if passwords match
+    if password != confirm_password:
+        return templates.TemplateResponse(
+            "sign_up.html",
+            {
+                "request": req,  # Use the instance `req` here
+                "error": "Passwords do not match",
+                "username": username,
+                "email": email,
+            },
+        )
+
+    # Hash the password
     hashed_password = pwd_context.hash(password)
+
+    # Create a new user
 
     # Create a new user
     new_user = models.User(
@@ -243,15 +262,54 @@ async def delete_task(task_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/profile/{user_id}")
-async def profile(req: Request, user_id: int, db: Session = Depends(get_db)):
+async def profile(
+    req: Request, user_id: int, db: Session = Depends(get_db), logged_in: bool = True
+):
     user = db.query(User).filter(User.id == user_id).first()
 
+    # Get user details
     user_details = {
         "id": user.id,
         "username": user.username,
         "email": user.email,
     }
+
+    # Retrieve all tasks
+    tasks = db.query(Todo).filter(Todo.user_id == user.id).all()
+
+    # Count tasks based on their status
+    completed_tasks = [task for task in tasks if task.status]
+    pending_tasks = [
+        task for task in tasks if not task.status and task.dueDate >= datetime.now()
+    ]
+    overdue_tasks = [
+        task for task in tasks if not task.status and task.dueDate < datetime.now()
+    ]
+
+    # Prepare task counts
+    completed_count = len(completed_tasks)
+    pending_count = len(pending_tasks)
+    overdue_count = len(overdue_tasks)
+
+    # Calculate the percentage for each task type
+    total_tasks = completed_count + pending_count + overdue_count
+    completed_percentage = (completed_count / total_tasks) * 100 if total_tasks else 0
+    pending_percentage = (pending_count / total_tasks) * 100 if total_tasks else 0
+    overdue_percentage = (overdue_count / total_tasks) * 100 if total_tasks else 0
+
+    # Pass data to the template
     return templates.TemplateResponse(
-        "profile.html", {"request": req, "user": user_details}
+        "profile.html",
+        {
+            "request": req,
+            "user": user_details,
+            "logged_in": logged_in,
+            "completed_count": completed_count,
+            "pending_count": pending_count,
+            "overdue_count": overdue_count,
+            "completed_percentage": completed_percentage,
+            "pending_percentage": pending_percentage,
+            "overdue_percentage": overdue_percentage,
+        },
     )
 
