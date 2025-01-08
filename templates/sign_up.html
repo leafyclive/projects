@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/sign_up.css">
 </head>
 <body>
     <div class="signup-container">
@@ -17,9 +19,15 @@
             
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
+
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
             
             <button type="submit">Sign Up</button>
         </form>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
     </div>
 </body>
 </html>

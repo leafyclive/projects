@@ -3,21 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Creation and Editing</title>
+    <title>Create New Task</title>
+    <link rel="stylesheet" href="/static/new_task.css">
+
 </head>
 <body>
-    <div class="container">
-        <h1>Create New Task</h1>
-    <form action="/new_task" method="post">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required><br><br>
-        <label for="description">Description:</label>
-        <input type="text" id="description" name="description"><br><br>
-        <label for="due_date">Due Date:</label>
-        <input type="date" id="due_date" name="due_date" required><br><br>
-        <button type="submit">Create Task</button>
-    </form>
-    </div>
+    <header class="navbar">
+        <div class="navbar-left">
+            <h1>Create Task</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/" class="button">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="segment">
+            <h2>Create a New Task</h2>
+            <form id="taskForm" action="/new_task" method="post">
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="due_date">Due Date:</label>
+                    <input type="date" id="due_date" name="due_date" required>
+                </div>
+                
+                <button type="submit" class="button">Create Task</button>
+            </form>
+        </section>
+    </main>
+
     <script>
         document.getElementById('taskForm').addEventListener('submit', async function(event) {
             event.preventDefault();

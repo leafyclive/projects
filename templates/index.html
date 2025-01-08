@@ -4,28 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
+    <link rel="stylesheet" href="/static/index.css">
 </head>
+
 <body>
-    <div>
-        {% if logged_in %}
-            <span>Welcome, {{ user.username }}</span>
-            <a href="/logout">Logout</a>
+    <div class="navbar">
+    <ul>
+        {% if logged_in %} 
+            <li><span>Welcome, {{ user.username }}</span></li>
+            <li><a href="/logout">Logout</a></li>
+            <li><a href="/profile/{{ user.id }}">Profile</a></li>
+            <li><a href="/new_task">Create New Task</a></li>
         {% else %}
-            <a href="/login">Login</a>
-            <a href="/sign_up">Sign Up</a>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/sign_up">Sign Up</a></li>
         {% endif %}
-        <a href="profile/{{ user.id }}">Profile</a>
-    </div>
-    <h1>Todo List</h1>
-    <div>
-        <button onclick="location.href='new_task'">Create New Task</button>
-    </div>
-    <div>
-        <input type="text" id="search" placeholder="Search tasks...">
-        <button onclick="filterTasks()">Search</button>
+    </ul>
+    <div class="a1">
+           <input type="text" id="search" placeholder="Search tasks...">
+            <button onclick="filterTasks()">Search</button>
+        </div>
     </div>
 
-    <div>
+
+   <h1 >Tasks</h1>
+
+
+
+<div class="container">
+    <div class="segment">
         <h2>Pending</h2>
         <ul id="pending-tasks">
             {% for task in pending_tasks %}
@@ -33,17 +40,17 @@
                     <strong>{{ task.title }}</strong> - Due: {{ task.dueDate }}
                     <p>Description: {{ task.description }}</p>
                     <form action="/complete_task/{{ task.id }}" method="POST" style="display: inline;">
-                        <button type="submit">Complete</button>
+                        <button type="submit", class="complete">Complete</button>
                     </form>
                     <form action="/delete_task/{{ task.id }}" method="POST" style="display: inline;">
-                        <button type="submit">Delete</button>
+                        <button type="submit", class="delete">Delete</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
     </div>
     
-    <div>
+    <div class="segment">
         <h2>Completed</h2>
         <ul id="completed-tasks">
             {% for task in completed_tasks %}
@@ -51,14 +58,14 @@
                     <strong>{{ task.title }}</strong> - Completed
                     <p>Description: {{ task.description }}</p>
                     <form action="/delete_task/{{ task.id }}" method="POST" style="display: inline;">
-                        <button type="submit">Delete</button>
+                        <button type="submit", class="delete">Delete</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
     </div>
     
-    <div>
+    <div class="segment">
         <h2>Overdue</h2>
         <ul id="overdue-tasks">
             {% for task in overdue_tasks %}
@@ -66,20 +73,37 @@
                     <strong>{{ task.title }}</strong> - Overdue, planned date: {{ task.dueDate }}
                     <p>Description: {{ task.description }}</p>
                     <form action="/complete_task/{{ task.id }}" method="POST" style="display: inline;">
-                        <button type="submit">Complete</button>
+                        <button type="submit", class="complete">Complete</button>
                     </form>
                     <form action="/delete_task/{{ task.id }}" method="POST" style="display: inline;">
-                        <button type="submit">Delete</button>
+                        <button type="submit", class="delete">Delete</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
     </div>
+</div>
     
-
-    <script>
+<script>
         function filterTasks() {
-            // Implement filter functionality here
+            const searchQuery = document.getElementById('search').value.toLowerCase();
+            const taskSegments = document.querySelectorAll('.segment');
+
+            taskSegments.forEach(segment => {
+                const taskList = segment.querySelector('ul');
+                const tasks = taskList.querySelectorAll('li');
+
+                tasks.forEach(task => {
+                    const taskTitle = task.querySelector('strong').textContent.toLowerCase();
+                    const taskDescription = task.querySelector('p').textContent.toLowerCase();
+
+                    if (taskTitle.includes(searchQuery) || taskDescription.includes(searchQuery)) {
+                        task.style.display = 'block';
+                    } else {
+                        task.style.display = 'none';
+                    }
+                });
+            });
         }
     </script>
 </body>

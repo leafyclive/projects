@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, Request, status, Form
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from datetime import datetime
@@ -11,10 +12,13 @@ from database import SessionLocal, engine
 from passlib.context import CryptContext
 from fastapi.templating import Jinja2Templates
 
+
 models.Base.metadata.create_all(bind=engine)
 
 templates = Jinja2Templates(directory="templates")
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key="!secret")
@@ -134,12 +138,29 @@ async def signup(req: Request):
 
 @app.post("/sign_up")
 async def signup_post(
+    req: Request,  # Add Request instance here
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    confirm_password: str = Form(...),
     db: Session = Depends(get_db),
 ):
+    # Check if passwords match
+    if password != confirm_password:
+        return templates.TemplateResponse(
+            "sign_up.html",
+            {
+                "request": req,  # Use the instance `req` here
+                "error": "Passwords do not match",
+                "username": username,
+                "email": email,
+            },
+        )
+
+    # Hash the password
     hashed_password = pwd_context.hash(password)
+
+    # Create a new user
     new_user = models.User(
         username=username, email=email, hashed_password=hashed_password
     )
@@ -150,8 +171,14 @@ async def signup_post(
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
     except SQLAlchemyError as e:
         db.rollback()
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content={"error": str(e)}
+        return templates.TemplateResponse(
+            "sign_up.html",
+            {
+                "request": req,  
+                "error": "An error occurred while creating the account. Please try again.",
+                "username": username,
+                "email": email,
+            },
         )
 
 
@@ -227,3 +254,4 @@ async def profile(req: Request, user_id: int, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         "profile.html", {"request": req, "user": user_details}
     )
+
